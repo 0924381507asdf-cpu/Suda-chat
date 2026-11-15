@@ -1,4 +1,126 @@
-/* === هوية وتصميم واتساب === */
+/* === 1. تنسيق شاشة البداية بالصورة الفخمة === */
+.splash-screen {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #032519;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.splash-container {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  max-height: 850px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.splash-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  user-select: none;
+}
+
+/* الأزرار الشفافة فوق أزرار الصورة */
+.hotspot-btn {
+  position: absolute;
+  left: 9%;
+  width: 82%;
+  height: 7.5%;
+  background: transparent;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.hotspot-btn:hover {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.45);
+}
+
+.hotspot-btn:active {
+  transform: scale(0.97);
+}
+
+/* مكان زر "إنشاء حساب جديد" الذهبي في الصورة */
+.hotspot-register {
+  bottom: 16.2%;
+}
+
+/* مكان زر "تسجيل الدخول" الأخضر في الصورة */
+.hotspot-login {
+  bottom: 7.2%;
+}
+
+/* النافذة المنبثقة لإدخال البيانات فوق الصورة */
+.auth-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 20, 14, 0.78);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 20;
+  animation: fadeIn 0.25s ease;
+}
+
+.auth-modal-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  border: 2px solid #D97706;
+  text-align: right;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #075E54;
+  font-size: 1.3rem;
+}
+
+.close-modal-btn {
+  background: #f1f5f9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-modal-btn:hover {
+  background: #e2e8f0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* === 2. هوية وتصميم واتساب === */
 :root {
   --wa-teal-dark: #075E54;
   --wa-teal: #128C7E;
