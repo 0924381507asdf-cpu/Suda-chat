@@ -1,12 +1,15 @@
-/* === 1. تنسيق شاشة البداية بالصورة الفخمة === */
+/* === شاشة البداية الأسطورية مع الصورة والأزرار الشفافة === */
 .splash-screen {
-  min-height: 100vh;
-  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background-color: #032519;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  z-index: 9999;
 }
 
 .splash-container {
@@ -14,7 +17,7 @@
   width: 100%;
   max-width: 450px;
   height: 100vh;
-  max-height: 850px;
+  max-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -28,7 +31,7 @@
   user-select: none;
 }
 
-/* الأزرار الشفافة فوق أزرار الصورة */
+/* الأزرار الشفافة المطبوقة بدقة فوق أزرار الصورة */
 .hotspot-btn {
   position: absolute;
   left: 9%;
@@ -50,36 +53,34 @@
   transform: scale(0.97);
 }
 
-/* مكان زر "إنشاء حساب جديد" الذهبي في الصورة */
 .hotspot-register {
   bottom: 16.2%;
 }
 
-/* مكان زر "تسجيل الدخول" الأخضر في الصورة */
 .hotspot-login {
   bottom: 7.2%;
 }
 
-/* النافذة المنبثقة لإدخال البيانات فوق الصورة */
+/* النافذة المنبثقة للتسجيل والدخول */
 .auth-modal-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(2, 20, 14, 0.78);
+  background: rgba(2, 20, 14, 0.85);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
   z-index: 20;
-  animation: fadeIn 0.25s ease;
 }
 
 .auth-modal-card {
   width: 100%;
+  max-width: 380px;
   background: #ffffff;
   border-radius: 20px;
   padding: 24px 20px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
   border: 2px solid #D97706;
   text-align: right;
 }
@@ -115,12 +116,7 @@
   background: #e2e8f0;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* === 2. هوية وتصميم واتساب === */
+/* === هوية وتصميم واتساب === */
 :root {
   --wa-teal-dark: #075E54;
   --wa-teal: #128C7E;
@@ -142,7 +138,6 @@
   background-color: var(--wa-teal-dark) !important;
 }
 
-/* الشريط العلوي الأخضر */
 .wa-header {
   background-color: var(--wa-teal-dark) !important;
   color: #ffffff !important;
@@ -153,7 +148,6 @@
   color: #ffffff !important;
 }
 
-/* شريط التبويبات (الدردشات - الحالة - المكالمات) */
 .wa-tabs {
   display: flex;
   background-color: var(--wa-teal-dark);
@@ -186,7 +180,6 @@
   border-bottom-color: var(--wa-green);
 }
 
-/* الصور الرمزية */
 .wa-avatar {
   background-color: #DFE5E7 !important;
   color: #54656F !important;
@@ -197,7 +190,6 @@
   color: var(--wa-teal) !important;
 }
 
-/* شاشة قريباً */
 .coming-soon-box {
   flex: 1;
   display: flex;
@@ -236,7 +228,6 @@
   max-width: 260px;
 }
 
-/* خلفية المحادثة وفقاعات الرسائل */
 .wa-chat-bg {
   background-color: var(--wa-chat-bg) !important;
   background-image: radial-gradient(#d5cfc7 0.75px, transparent 0.75px);
