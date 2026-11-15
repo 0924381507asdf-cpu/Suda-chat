@@ -70,7 +70,6 @@ export default function App() {
   const [authReady, setAuthReady] = useState(false);
   const [profile, setProfile] = useState(null);
 
-  // authMode: "welcome" | "login" | "register"
   const [authMode, setAuthMode] = useState("welcome");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -91,6 +90,13 @@ export default function App() {
 
   const messagesEndRef = useRef(null);
   const authEventRef = useRef(0);
+
+  // طلب صلاحية الإشعارات عند تسجيل الدخول
+  useEffect(() => {
+    if (user && "Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, [user]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -243,6 +249,7 @@ export default function App() {
     };
   }, [user, profile, searchText]);
 
+  // تحميل الرسائل مع إرسال إشعار للمتصفح عند وصول رسالة جديدة من شخص آخر
   useEffect(() => {
     if (!activeChat || !user) {
       setMessages([]);
@@ -258,9 +265,22 @@ export default function App() {
     return onSnapshot(
       messagesQuery,
       (snapshot) => {
-        setMessages(
-          snapshot.docs.map((item) => ({ id: item.id, ...item.data() }))
-        );
+        const docs = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
+        
+        // التحقق من وصول رسالة جديدة ليست منك لإظهار الإشعار
+        if (docs.length > messages.length && messages.length > 0) {
+          const latestMsg = docs[docs.length - 1];
+          if (latestMsg && latestMsg.senderId !== user.uid) {
+            if ("Notification" in window && Notification.permission === "granted") {
+              new Notification(`رسالة جديدة من ${activeChat.other?.displayName || "مستخدم"}`, {
+                body: latestMsg.text,
+                icon: "/favicon.ico"
+              });
+            }
+          }
+        }
+
+        setMessages(docs);
       },
       (err) => setError(errorDetails(err))
     );
@@ -466,7 +486,6 @@ export default function App() {
     );
   }
 
-  // شاشة البداية بالصورة الأسطورية والأزرار التفاعلية المستقلة
   if (!user) {
     return (
       <main className="splash-screen">
