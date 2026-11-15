@@ -56,8 +56,7 @@ function readableError(error) {
     "auth/operation-not-allowed": "Firebase رفض طريقة تسجيل الدخول.",
     "auth/too-many-requests": "محاولات كثيرة. انتظر قليلاً.",
     "auth/network-request-failed": "تعذر الاتصال بالإنترنت.",
-    "auth/unauthorized-domain": "نطاق الموقع غير مسموح به.",
-    "permission-denied": "قواعد Firestore لا تسمح بهذه العملية."
+    "auth/unauthorized-domain": "نطاق الموقع غير مسموح به."
   };
   return messages[code] || error?.message || "حدث خطأ غير معروف.";
 }
@@ -71,7 +70,7 @@ export default function App() {
   const [authReady, setAuthReady] = useState(false);
   const [profile, setProfile] = useState(null);
 
-  // الحالة تبدأ بـ welcome لتظهر الصورة الفخمة أولاً
+  // authMode: "welcome" | "login" | "register"
   const [authMode, setAuthMode] = useState("welcome");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -460,14 +459,14 @@ export default function App() {
 
   if (!authReady) {
     return (
-      <div className="center">
-        <LoaderCircle className="spin" />
-        جارٍ تحميل سوداشات...
+      <div className="center-loader">
+        <LoaderCircle className="spin" size={40} />
+        <p>جارٍ تحميل سوداشات...</p>
       </div>
     );
   }
 
-  // شاشة البداية بالصورة الفخمة والأزرار التفاعلية فوقها
+  // شاشة البداية بالصورة الأسطورية والأزرار التفاعلية المستقلة
   if (!user) {
     return (
       <main className="splash-screen">
@@ -486,6 +485,8 @@ export default function App() {
                 onClick={() => {
                   setAuthMode("register");
                   setError("");
+                  setEmail("");
+                  setPassword("");
                 }}
                 aria-label="إنشاء حساب جديد"
               />
@@ -496,6 +497,8 @@ export default function App() {
                 onClick={() => {
                   setAuthMode("login");
                   setError("");
+                  setEmail("");
+                  setPassword("");
                 }}
                 aria-label="تسجيل الدخول"
               />
@@ -551,11 +554,11 @@ export default function App() {
                     />
                   </div>
 
-                  <button className="primary wa-btn" disabled={busy}>
+                  <button className="primary wa-btn auth-submit-btn" disabled={busy}>
                     {busy
                       ? "يرجى الانتظار..."
                       : authMode === "register"
-                        ? "إنشاء حساب"
+                        ? "إنشاء حساب جديد"
                         : "تسجيل الدخول"}
                   </button>
                 </form>
@@ -573,7 +576,7 @@ export default function App() {
 
                 <button
                   type="button"
-                  className="link-button"
+                  className="link-button switch-mode-btn"
                   onClick={() => {
                     setAuthMode(
                       authMode === "login" ? "register" : "login"
@@ -586,7 +589,7 @@ export default function App() {
                     : "لديك حساب بالفعل؟ سجّل الدخول"}
                 </button>
 
-                {error && <p className="error">{error}</p>}
+                {error && <p className="error-box">{error}</p>}
               </section>
             </div>
           )}
@@ -632,7 +635,7 @@ export default function App() {
             تسجيل الخروج
           </button>
 
-          {error && <p className="error">{error}</p>}
+          {error && <p className="error-box">{error}</p>}
         </section>
       </main>
     );
