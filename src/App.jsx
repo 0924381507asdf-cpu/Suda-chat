@@ -31,7 +31,6 @@ import {
   Send,
   LogOut,
   Search,
-  UserRound,
   ArrowRight,
   Check,
   LoaderCircle,
@@ -41,10 +40,9 @@ import {
   CircleDashed,
   Clock,
   Bell,
-  Camera
+  Camera,
+  Image as ImageIcon
 } from "lucide-react";
-
-const PROJECT_ID = auth.app.options.projectId;
 
 function readableError(error) {
   const code = error?.code || "";
@@ -67,8 +65,8 @@ function errorDetails(error) {
   return `${readableError(error)} | الرمز: ${error?.code || "غير معروف"}`;
 }
 
-// دالة لضغط الصورة وتحويلها إلى نص Base64 خفيف لحفظها بثبات في Firestore
-function compressImage(file, maxSize = 220) {
+// دالة ضغط الصور (تستخدم للصورة الشخصية ولصور المحادثات)
+function compressImage(file, maxSize = 600, quality = 0.72) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -94,7 +92,7 @@ function compressImage(file, maxSize = 220) {
         canvas.height = height;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL("image/jpeg", 0.78));
+        resolve(canvas.toDataURL("image/jpeg", quality));
       };
       img.onerror = () => reject(new Error("تعذر قراءة الصورة."));
       img.src = e.target.result;
@@ -104,7 +102,6 @@ function compressImage(file, maxSize = 220) {
   });
 }
 
-// مكون لعرض الصورة الرمزية أو الحرف الأول إذا لم توجد صورة
 function UserAvatar({ photoURL, name, className = "" }) {
   if (photoURL) {
     return (
@@ -323,7 +320,7 @@ export default function App() {
           if (latestMsg && latestMsg.senderId !== user.uid) {
             setToastMsg({
               sender: activeChat.other?.displayName || "مستخدم",
-              text: latestMsg.text
+              text: latestMsg.type === "image" ? "📷 أرسل صورة" : latestMsg.text
             });
             setTimeout(() => setToastMsg(null), 4000);
           }
@@ -382,26 +379,24 @@ export default function App() {
     }
   }
 
-  // اختيار الصورة وضغطها في شاشة إنشاء الملف الشخصي
   async function handleInitialPhotoChange(event) {
     const file = event.target.files?.[0];
     if (!file) return;
     try {
-      const compressed = await compressImage(file);
+      const compressed = await compressImage(file, 220, 0.78);
       setPhotoPreview(compressed);
     } catch (err) {
       setError(err.message);
     }
   }
 
-  // تغيير الصورة لاحقاً من القائمة الجانبية وحفظها فوراً في Firestore
   async function handleUpdateProfilePhoto(event) {
     const file = event.target.files?.[0];
     if (!file || !user) return;
     setBusy(true);
     setError("");
     try {
-      const compressed = await compressImage(file);
+      const compressed = await compressImage(file, 220, 0.78);
       await updateDoc(doc(db, "profiles", user.uid), {
         photoURL: compressed
       });
@@ -541,6 +536,36 @@ export default function App() {
       });
 
       setMessageText("");
+    } catch (err) {
+      setError(errorDetails(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // دالة إرسال صورة داخل المحادثة
+  async function handleSendImage(event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file || !activeChat || !user || busy) return;
+
+    setBusy(true);
+    setError("");
+
+    try {
+      const compressedImage = await compressImage(file, 600, 0.72);
+      await addDoc(collection(db, "chats", activeChat.id, "messages"), {
+        senderId: user.uid,
+        text: "",
+        imageData: compressedImage,
+        type: "image",
+        createdAt: serverTimestamp()
+      });
+
+      await updateDoc(doc(db, "chats", activeChat.id), {
+        lastMessage: "📷 صورة",
+        updatedAt: serverTimestamp()
+      });
     } catch (err) {
       setError(errorDetails(err));
     } finally {
@@ -701,7 +726,6 @@ export default function App() {
     );
   }
 
-  // شاشة إكمال الملف الشخصي مع خيار رفع الصورة
   if (!profile) {
     return (
       <main className="auth-page">
@@ -901,7 +925,6 @@ export default function App() {
             </div>
           )}
 
-          {/* الشريط السفلي لملفك الشخصي (اضغط على الصورة لتغييرها في أي وقت) */}
           <div className="my-profile">
             <label className="avatar-edit-wrapper" title="اضغط لتغيير صورتك">
               <UserAvatar
@@ -956,7 +979,15 @@ export default function App() {
                       message.senderId === user.uid ? "mine wa-msg-mine" : "theirs wa-msg-theirs"
                     }`}
                   >
-                    <p>{message.text}</p>
+                    {message.type === "image" && message.imageData ? (
+                      <img
+                        src={message.imageData}
+                        alt="صورة مرسلة"
+                        className="chat-message-img"
+                      />
+                    ) : (
+                      <p>{message.text}</p>
+                    )}
                     <small>
                       {message.createdAt?.toDate
                         ? message.createdAt.toDate().toLocaleTimeString("ar", {
@@ -978,6 +1009,17 @@ export default function App() {
               </div>
 
               <form className="composer wa-composer" onSubmit={sendMessage}>
+                <label className="attach-image-btn" title="إرسال صورة">
+                  <ImageIcon size={22} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleSendImage}
+                    disabled={busy}
+                    hidden
+                  />
+                </label>
+
                 <input
                   value={messageText}
                   onChange={(event) => setMessageText(event.target.value)}
