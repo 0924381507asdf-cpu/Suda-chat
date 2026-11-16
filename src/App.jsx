@@ -1,4 +1,5 @@
-if (!user) {
+// شاشة البداية بالصورة الفخمة والأزرار التفاعلية المستقلة
+  if (!user) {
     return (
       <main className="splash-screen">
         <div className="splash-container">
@@ -8,39 +9,38 @@ if (!user) {
             className="splash-image"
           />
 
-          {/* أزرار تفاعلية واضحة وأسفل الصورة تضمن الاستجابة الفورية 100% */}
           {authMode === "welcome" && (
-            <div className="splash-buttons-overlay">
+            <>
               <button
                 type="button"
-                className="primary wa-btn splash-main-btn"
-                onClick={() => {
+                className="hotspot-btn hotspot-register"
+                onClick={(e) => {
+                  e.stopPropagation();
                   setAuthMode("register");
                   setError("");
                   setEmail("");
                   setPassword("");
                 }}
-              >
-                إنشاء حساب جديد
-              </button>
+                aria-label="إنشاء حساب جديد"
+              />
 
               <button
                 type="button"
-                className="secondary wa-btn-outline splash-main-btn"
-                onClick={() => {
+                className="hotspot-btn hotspot-login"
+                onClick={(e) => {
+                  e.stopPropagation();
                   setAuthMode("login");
                   setError("");
                   setEmail("");
                   setPassword("");
                 }}
-              >
-                تسجيل الدخول
-              </button>
-            </div>
+                aria-label="تسجيل الدخول"
+              />
+            </>
           )}
 
           {authMode !== "welcome" && (
-            <div className="auth-modal-backdrop">
+            <div className="auth-modal-backdrop" onClick={(e) => e.stopPropagation()}>
               <section className="auth-modal-card">
                 <div className="modal-header">
                   <h2>
@@ -94,7 +94,7 @@ if (!user) {
                       : authMode === "register"
                         ? "إنشاء حساب جديد"
                         : "تسجيل الدخول"}
-                    </button>
+                  </button>
                 </form>
 
                 {authMode === "login" && (
