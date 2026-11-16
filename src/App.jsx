@@ -39,7 +39,8 @@ import {
   Lock,
   Phone,
   CircleDashed,
-  Clock
+  Clock,
+  Bell
 } from "lucide-react";
 
 const PROJECT_ID = auth.app.options.projectId;
@@ -87,16 +88,10 @@ export default function App() {
   const [searchText, setSearchText] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [toastMsg, setToastMsg] = useState(null);
 
   const messagesEndRef = useRef(null);
   const authEventRef = useRef(0);
-
-  // طلب صلاحية الإشعارات عند تسجيل الدخول
-  useEffect(() => {
-    if (user && "Notification" in window && Notification.permission === "default") {
-      Notification.requestPermission();
-    }
-  }, [user]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -142,6 +137,7 @@ export default function App() {
     };
   }, []);
 
+  // مراقبة المحادثات وإظهار إشعار فوري داخل التطبيق عند وصول رسالة جديدة
   useEffect(() => {
     if (!user || !profile) {
       setChats([]);
@@ -249,7 +245,6 @@ export default function App() {
     };
   }, [user, profile, searchText]);
 
-  // تحميل الرسائل مع إرسال إشعار للمتصفح عند وصول رسالة جديدة من شخص آخر
   useEffect(() => {
     if (!activeChat || !user) {
       setMessages([]);
@@ -267,16 +262,15 @@ export default function App() {
       (snapshot) => {
         const docs = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
         
-        // التحقق من وصول رسالة جديدة ليست منك لإظهار الإشعار
+        // إظهار تنبيه داخلي إذا وصلت رسالة جديدة من شخص آخر وأنت لست داخل المحادثة النشطة أو كإشعار فوري
         if (docs.length > messages.length && messages.length > 0) {
           const latestMsg = docs[docs.length - 1];
           if (latestMsg && latestMsg.senderId !== user.uid) {
-            if ("Notification" in window && Notification.permission === "granted") {
-              new Notification(`رسالة جديدة من ${activeChat.other?.displayName || "مستخدم"}`, {
-                body: latestMsg.text,
-                icon: "/favicon.ico"
-              });
-            }
+            setToastMsg({
+              sender: activeChat.other?.displayName || "مستخدم",
+              text: latestMsg.text
+            });
+            setTimeout(() => setToastMsg(null), 4000);
           }
         }
 
@@ -617,6 +611,7 @@ export default function App() {
     );
   }
 
+  // واجهة إكمال الملف الشخصي بتصميم فخم وأسطوري
   if (!profile) {
     return (
       <main className="auth-page">
@@ -632,7 +627,7 @@ export default function App() {
             <input
               value={displayName}
               onChange={(event) => setDisplayName(event.target.value)}
-              placeholder="اسمك"
+              placeholder="اسمك الكامل"
               required
             />
 
@@ -662,6 +657,16 @@ export default function App() {
 
   return (
     <main className="app-shell wa-theme">
+      {toastMsg && (
+        <div className="toast-notification">
+          <Bell size={20} className="wa-icon-accent" />
+          <div>
+            <b>{toastMsg.sender}</b>
+            <p>{toastMsg.text}</p>
+          </div>
+        </div>
+      )}
+
       <header className="topbar wa-header">
         <div className="brand-inline">
           <strong>سوداشات</strong>
