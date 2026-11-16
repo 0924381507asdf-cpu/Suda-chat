@@ -1,86 +1,144 @@
-/* === تصميم واجهة إكمال الملف الشخصي الأسطورية والفخمة === */
-.auth-page {
-  min-height: 100vh;
+/* === إصلاح شاشة البداية والأزرار الشفافة بدقة تامة === */
+.splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100vw;
-  background: linear-gradient(135deg, #032519 0%, #075E54 100%);
+  height: 100vh;
+  background-color: #032519;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.splash-container {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  height: 100%;
+  max-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.splash-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  user-select: none;
+}
+
+/* الأزرار الشفافة فوق الصورة بدقة */
+.hotspot-btn {
+  position: absolute;
+  left: 10%;
+  width: 80%;
+  height: 7%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.hotspot-register {
+  bottom: 16.5%;
+}
+
+.hotspot-login {
+  bottom: 7.5%;
+}
+
+/* النافذة المنبثقة للتسجيل والدخول (تغطي الشاشة وتمنع تفاعل الأزرار الخلفية) */
+.auth-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 20, 14, 0.9);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  z-index: 9999;
+}
+
+.auth-modal-card {
+  width: 100%;
+  max-width: 380px;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 24px 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  border: 2px solid #D97706;
+  text-align: right;
   direction: rtl;
 }
 
-.auth-card {
-  width: 100%;
-  max-width: 420px;
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 32px 24px;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
-  border: 2px solid #D97706;
-  text-align: right;
+.modal-header {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 10px;
 }
 
-.auth-card .brand-mark {
-  width: 64px;
-  height: 64px;
+.modal-header h2 {
+  margin: 0;
+  color: #075E54;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.close-modal-btn {
+  background: #f1f5f9;
+  border: none;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #334155;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 8px auto;
-  background-color: #128C7E;
-  color: #ffffff;
 }
 
-.auth-card h1 {
-  margin: 0;
-  color: #075E54;
-  font-size: 1.5rem;
-  font-weight: 800;
-  text-align: center;
-}
-
-.auth-card p.muted {
-  margin: 0 0 16px 0;
-  color: #667781;
-  font-size: 0.9rem;
-  text-align: center;
-}
-
-.auth-card label {
+.auth-modal-card label {
   display: block;
   font-size: 0.85rem;
   font-weight: 700;
   color: #334155;
   margin-bottom: 6px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
-.auth-card input {
-  width: 100%;
+.auth-modal-card .field {
+  display: flex;
+  align-items: center;
   background: #f8fafc;
   border: 1px solid #cbd5e1;
   border-radius: 12px;
-  padding: 12px 16px;
+  padding: 0 12px;
+  color: #64748b;
+}
+
+.auth-modal-card .field input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 12px 8px;
   outline: none;
   font-size: 0.95rem;
   color: #0f172a;
-  box-sizing: border-box;
 }
 
-.auth-card input:focus {
-  border-color: #128C7E;
-  box-shadow: 0 0 0 3px rgba(18, 140, 126, 0.15);
-}
-
-.auth-card .wa-btn {
-  margin-top: 20px;
+.auth-submit-btn {
+  margin-top: 18px;
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   border-radius: 12px;
   font-weight: bold;
   font-size: 1rem;
@@ -88,48 +146,27 @@
   border: none;
   background-color: #128C7E;
   color: #ffffff;
-  transition: background 0.2s;
 }
 
-.auth-card .wa-btn:hover {
-  background-color: #075E54;
+.link-button {
+  background: none;
+  border: none;
+  color: #128C7E;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  display: inline-block;
+  text-align: center;
+  width: 100%;
 }
 
-/* === نظام التنبيهات الداخلية الفورية (Toast Notifications) === */
-.toast-notification {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #075E54;
-  color: #ffffff;
-  padding: 12px 20px;
-  border-radius: 30px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  z-index: 99999;
-  border: 2px solid #25D366;
-  animation: slideDown 0.3s ease forwards;
-  direction: rtl;
-  max-width: 90%;
-}
-
-.toast-notification b {
-  color: #25D366;
-  font-size: 0.95rem;
-}
-
-.toast-notification p {
-  margin: 0;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translate(-50%, -20px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
+.error-box {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-top: 12px;
+  text-align: center;
 }
